@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     kotlin("jvm") version "1.6.20"
     id("application")
@@ -10,6 +12,14 @@ plugins {
     // This creates a fat JAR
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
+
+// load the properties
+val properties = Properties().apply {load(file("gradle.properties").inputStream())}
+
+// get version
+version = properties.getProperty("version") 
+println("The current version is: $version")
+
 
 group = "com.ido"
 description = "HelloWorld"
@@ -33,5 +43,22 @@ graalvmNative {
                 vendor.set(JvmVendorSpec.matching("GraalVM Community"))
             })
         }
+    }
+}
+
+
+tasks.register("incrementPatchVersion") {
+    doLast {
+        val propertiesFile = file("gradle.properties")
+        val properties = Properties().apply {load(propertiesFile.inputStream())}
+
+        val version = properties.getProperty("version")
+        val (major, minor, patch) = version.split(".").map { it.toInt() }
+        val newVersion = "${major}.${minor}.${patch+1}"
+
+        properties.setProperty("version", newVersion)
+        properties.store(propertiesFile.outputStream(), null)
+
+        println("Version updated to $newVersion")
     }
 }
