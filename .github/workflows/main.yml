@@ -23,3 +23,11 @@ jobs:
         run: |
           java -version
           ./gradlew --version
+
+      - name: Update patch version
+        run: ./gradlew incrementPatchVersion
+
+      - name: build JAR
+        run: ./gradlew build
+      - name: run JAR
+        run: java -jar build/libs/*-all.jar
