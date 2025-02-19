@@ -19,15 +19,28 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Check Java and Gradle versions
-        run: |
-          java -version
-          ./gradlew --version
-
       - name: Update patch version
-        run: ./gradlew incrementPatchVersion
+        run: |
+          ./gradlew incrementPatchVersion
+          version=$(./gradlew getVersion --quiet | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
 
-      - name: build JAR
+          # Check if the version is empty
+          if [ -z "$version" ]; then
+            echo "Error: Version not found" >&2
+            exit 1
+          fi
+
+          echo "Extracted version: $version"
+
+          # Set the environment variable VERSION for subsequent steps.
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+          # Set the step output so you can reference it later.
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Build jar
         run: ./gradlew build
-      - name: run JAR
-        run: java -jar build/libs/*-all.jar
+      - name: run jar
+        run: |
+          java -jar build/libs/gradle-hello-world-amit-${VERSION}-all.jar
+          ls -al build/libs
