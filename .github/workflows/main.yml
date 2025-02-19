@@ -37,7 +37,7 @@ jobs:
           fi
 
           echo "Extracted version: $version"
-          echo "::set-output name=version::$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
   build:
     runs-on: ubuntu-latest
@@ -59,6 +59,7 @@ jobs:
 
       - name: Test jar
         run: |
+          ls -al build/libs
           java -jar build/libs/gradle-hello-world-amit-${VERSION}-all.jar
           ls -al build/libs
 
@@ -76,6 +77,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: get jar artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gradle-hello-world-amit-jar
+          path: build/libs/
 
       - name: Login to Docker Hub
         env:
