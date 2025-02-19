@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - new_pipeline
+      - new_pipeline # ! for debug!!!
 
 jobs:
   build:
@@ -80,26 +80,23 @@ jobs:
           ls -al build/libs
 
       - name: Login to Docker Hub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${VERSION} .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} .
 
       - name: Tag Docker image
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${VERSION} ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:latest
+        run: docker tag ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:latest
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${VERSION}
+          docker push ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
           docker push ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:latest
 
       - name: Download and run Docker image
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${VERSION}
-          docker run -d --name gradle-hello-world ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${VERSION}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker run -d --name gradle-hello-world ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
 
   commit-version:
     runs-on: ubuntu-latest
@@ -129,7 +126,7 @@ jobs:
           # Add gradle.properties and check for changes
           git add gradle.properties
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "Update gradle.properties version to ${VERSION} [skip ci]"
+            git commit -m "Update gradle.properties version to ${{ env.VERSION }} [skip ci]"
             git push
           else
             echo "No changes in gradle.properties to commit."
