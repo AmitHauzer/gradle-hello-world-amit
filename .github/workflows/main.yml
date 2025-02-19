@@ -63,7 +63,7 @@ jobs:
           ls -al build/libs
 
       - name: Upload jar Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gradle-hello-world-amit-jar
           path: build/libs/gradle-hello-world-amit-${VERSION}-all.jar
