@@ -81,25 +81,25 @@ jobs:
 
       - name: Login to Docker Hub
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} .
+        run: docker build -t ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} .
 
       - name: Tag Docker image
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:latest
+        run: docker tag ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:latest
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:latest
+          docker push ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker push ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:latest
 
       - name: Download and run Docker image
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
-          docker run -d --name gradle-hello-world ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker pull ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker run -d --name gradle-hello-world ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
 
   commit-version:
     runs-on: ubuntu-latest
