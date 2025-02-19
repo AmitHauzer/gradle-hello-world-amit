@@ -80,7 +80,10 @@ jobs:
           ls -al build/libs
 
       - name: Login to Docker Hub
-        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+        run: echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} .
