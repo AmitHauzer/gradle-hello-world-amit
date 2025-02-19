@@ -38,7 +38,7 @@ jobs:
 
           echo "Extracted version: $version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "version=$version" >> "$GITHUB_ENV"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Build jar
         run: ./gradlew build
