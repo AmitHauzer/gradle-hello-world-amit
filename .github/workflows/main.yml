@@ -79,33 +79,33 @@ jobs:
           ls -al
           ls -al build/libs
 
-      # - name: Login to Docker Hub
-      #   env:
-      #     DOCKER_USERNAME: amithauzer
-      #     DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-      #   run: echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - name: Login to Docker Hub
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} .
+        run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:${{ env.VERSION }} .
 
       - name: Tag Docker image
-        run: docker tag ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }} ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:latest
+        run: docker tag ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:${{ env.VERSION }} ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:latest
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
-          docker push ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:latest
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:latest
 
       - name: Download and run Docker image
         run: |
-          docker pull ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
-          docker run -d --name gradle-hello-world ${{ vars.DOCKER_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker pull ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
+          docker run -d --name gradle-hello-world ${{ vars.DOCKERHUB_USERNAME }}/gradle-hello-world:${{ env.VERSION }}
 
   commit-version:
     runs-on: ubuntu-latest
