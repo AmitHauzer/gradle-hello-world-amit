@@ -75,7 +75,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: get jar artifact
+      - name: Download jar artifact
         uses: actions/download-artifact@v4
         with:
           name: gradle-hello-world-amit-jar
@@ -90,7 +90,7 @@ jobs:
       - name: Build Docker image
         run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.VERSION }} .
       
-      - name: test docker
+      - name: Test container
         run: docker run ${{ vars.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.VERSION }} .
 
       - name: Tag Docker image
