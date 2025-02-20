@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - new_pipeline # ! for debug!!!
+      - new_pipeline # TODO: for debug!!!
 
 jobs:
   build:
@@ -81,7 +81,7 @@ jobs:
 
       - name: Login to Docker Hub
         env:
-          DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+          DOCKER_USERNAME: amithauzer
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
