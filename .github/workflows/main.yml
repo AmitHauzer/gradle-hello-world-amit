@@ -106,7 +106,7 @@ jobs:
 
   docker-check:
     runs-on: ubuntu-latest
-    needs: docker
+    needs: [build, docker]
     env:
       VERSION: ${{ needs.build.outputs.version }}
     steps:
@@ -120,7 +120,7 @@ jobs:
 
   commit-version:
     runs-on: ubuntu-latest
-    needs: docker
+    needs: [build ,docker, docker-check]
     env:
       VERSION: ${{ needs.build.outputs.version }}
     steps:
