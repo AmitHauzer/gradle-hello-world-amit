@@ -1,0 +1,93 @@
+name: Test of build, docker, and run
+
+env:
+  PROJECT_NAME: gradle-hello-world-amit
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Update patch version
+        id: increment-patch-version
+        run: ./gradlew incrementPatchVersion
+
+      - name: Get version
+        id: set-version
+        run: |
+          version=$(./gradlew getVersion --quiet | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+
+          # Check if the version is empty
+          if [ -z "$version" ]; then
+            echo "Error: Version not found" >&2
+            exit 1
+          fi
+
+          echo "Extracted version: $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Build jar
+        run: ./gradlew build
+
+      - name: Test jar
+        run: |
+          java -jar build/libs/gradle-hello-world-amit-${{ env.VERSION }}-all.jar
+
+      - name: Upload updated gradle.properties artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-properties
+          path: gradle.properties
+
+      - name: Upload jar Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-hello-world-amit-jar
+          path: build/libs/gradle-hello-world-amit-${{ env.VERSION }}-all.jar
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Download jar artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gradle-hello-world-amit-jar
+          path: build/libs/
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ vars.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.VERSION }} .
+
+      - name: Test container
+        run: docker run ${{ vars.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.VERSION }}
