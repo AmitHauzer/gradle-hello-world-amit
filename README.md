@@ -17,19 +17,7 @@ The jar files located ar gradle-hello-world/build/libs/
 make the runnable jar executable then, use "java -jar gradle-hello-world-all.jar"
 ```
 
-
-# Gradle Hello World
-
-This project is a simple Java "Hello World" application built with Gradle. It demonstrates a CI/CD pipeline that compiles the code, packages it into a JAR file, and builds a Docker image using a multi-stage Docker build.
-
-## Project Overview
-
-- **Programming Language:** Java
-- **Build Tool:** Gradle (using the Gradle Wrapper)
-- **Artifact:** JAR file generated from the Gradle build
-- **Docker:** A Docker image is created from the JAR file using a multi-stage build to ensure minimal image size and non-root execution.
-
-## CI/CD Workflows
+# CI/CD Workflows
 
 This repository includes two GitHub Actions workflows that operate based on the branch being updated:
 
