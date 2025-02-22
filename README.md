@@ -16,3 +16,31 @@ build - Compiles Hello World and creates JAR files.
 The jar files located ar gradle-hello-world/build/libs/
 make the runnable jar executable then, use "java -jar gradle-hello-world-all.jar"
 ```
+
+# CI/CD Workflows
+
+This repository includes two GitHub Actions workflows that operate based on the branch being updated:
+
+```mermaid
+graph LR;
+    build-->docker;
+    q{is it master?} --> |No| End;
+    docker-->q{is it master?} --> |Yes| docker-check --> commit-version --> End;
+```
+
+1. **Master Branch Workflow:**
+   - **Trigger:** Runs only on the `master` branch.
+   - **Actions:**
+     - **Version Update:** Automatically increments the patch portion of the JAR version (e.g., `1.0.0` → `1.0.1`).
+     - **Build & Package:** Compiles the code and packages it into a JAR file.
+     - **Artifact Upload:** Archives the JAR file as a build artifact.
+     - **Docker Build & Push:** Builds a Docker image using the updated JAR file, tags the image with the new version, and pushes it to Docker Hub.
+     - **Download the docker image:** Download the image and run!
+
+2. **Non-Master Branch Workflow:**
+   - **Trigger:** Runs on all branches except `master`.
+   - **Actions:**
+     - **Build & Package:** Compiles the code and packages it into a JAR file.
+     - **Docker Build:** Builds a Docker image for testing purposes.
+     - **Run container:** tests the container.
+
