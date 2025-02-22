@@ -18,7 +18,6 @@ val properties = Properties().apply {load(file("gradle.properties").inputStream(
 
 // get version
 version = properties.getProperty("version") 
-println("The current version is: $version")
 
 
 group = "com.ido"
@@ -60,5 +59,13 @@ tasks.register("incrementPatchVersion") {
         properties.store(propertiesFile.outputStream(), null)
 
         println("Version updated to $newVersion")
+    }
+}
+
+tasks.register("getVersion") {
+    doLast {
+        val propertiesFile = file("gradle.properties")
+        val properties = Properties().apply {load(propertiesFile.inputStream())}
+        System.out.println(properties.getProperty("version"))
     }
 }
