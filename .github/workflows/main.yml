@@ -19,13 +19,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      # ! CHECK IF NEEDED
-      - name: Set up Java 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
       - name: Get version
         id: set-version
         run: |
@@ -65,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-build]
     env:
-      VERSION: ${{ needs.build.outputs.version }}
+      VERSION: ${{ needs.docker-build.outputs.version }}
     steps:
       - name: Download Docker image
         run: |
@@ -78,7 +71,6 @@ jobs:
   commit-version:
     runs-on: ubuntu-latest
     needs: [docker-build, docker-check]
-    
     steps:
       - name: Checkout repository for commit
         uses: actions/checkout@v2
@@ -89,6 +81,19 @@ jobs:
 
       - name: Update patch version
         run: ./gradlew incrementPatchVersion
+      
+      - name: Get updated version
+        run: |
+          version=$(./gradlew getVersion --quiet | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+
+          # Check if the version is empty
+          if [ -z "$version" ]; then
+            echo "Error: Version not found" >&2
+            exit 1
+          fi
+
+          echo "Extracted version: $version"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Configure Git
         run: |
