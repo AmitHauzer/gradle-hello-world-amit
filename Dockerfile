@@ -18,7 +18,7 @@ RUN ./gradlew build \
 
 
 # Stage 2: Create a minimal runtime image
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk-alpine
 
 WORKDIR /gradle-hello-world-amit
 
