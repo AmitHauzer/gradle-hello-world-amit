@@ -32,7 +32,7 @@ graph LR;
    - **Actions:**
      - **Docker Build and run:** Builds a Docker image, runs test, and tags the image with the new version and latest.
      - **Docker push:** Pushes the images to Docker Hub.
-     - **Download the docker image:** Pulles the new image and runs!
+     - **Download the docker image:** Pulls the new image and runs!
      - **Version Update:** Automatically increments the patch portion of the JAR version (e.g., `1.0.0` → `1.0.1`).
 
 2. **Non-Master Branch Workflow:**
