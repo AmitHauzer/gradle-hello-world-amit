@@ -38,6 +38,5 @@ graph LR;
 2. **Non-Master Branch Workflow:**
    - **Trigger:** Runs on all branches except `master`.
    - **Actions:**
-     - **Docker Build:** Builds a Docker image for testing purposes.
-     - **Run container:** tests the container.
+     - **Docker Build and run:** Builds a Docker image for testing.
 
